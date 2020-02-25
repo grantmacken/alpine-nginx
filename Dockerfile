@@ -137,7 +137,6 @@ RUN echo    ' - install nginx' \
     --with-http_slice_module \
     --with-http_stub_status_module \
     && make && make install \
-    && mkdir -p ${WORKDIR}/cache \
     && rm ${WORKDIR}/nginx.tar.gz \
     && rm -r /tmp/nginx-${NGINX_VER} \
     && rm ${PREFIX}/conf/win-utf \
@@ -146,6 +145,7 @@ RUN echo    ' - install nginx' \
     && rm ${PREFIX}/conf/scgi* \
     && rm ${PREFIX}/conf/uw* \
     && rm ${PREFIX}/conf/*.default \
+    && mkdir ${PREFIX}/cache \
     && echo ' -  remove apk install deps' \
     && apk del .build-deps \
     && echo '---------------------------'
