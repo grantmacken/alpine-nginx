@@ -97,6 +97,7 @@ RUN echo ' - install pcre' \
 #     --with-ld-opt="-L${PCRE_LIB} -L${OPENSSL_LIB} -L${ZLIB_LIB} -Wl,-rpath,${PCRE_LIB}:${OPENSSL_LIB}:${ZLIB_LIB}" \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
 WORKDIR = /home
+COPY ./proxy/conf/nginx.conf ${WORKDIR}/
 ADD  https://nginx.org/download/nginx-${NGINX_VER}.tar.gz ${WORKDIR}/nginx.tar.gz
 RUN echo    ' - install nginx' \
     && echo '   -----------------' \
@@ -136,16 +137,15 @@ RUN echo    ' - install nginx' \
     && make && make install \
     && rm ${WORKDIR}/nginx.tar.gz \
     && rm -r /tmp/nginx-${NGINX_VER} \
-    && rm ${PREFIX}/conf/win-utf \
-    && rm ${PREFIX}/conf/koi* \
-    && rm ${PREFIX}/conf/fast* \
-    && rm ${PREFIX}/conf/scgi* \
-    && rm ${PREFIX}/conf/uw* \
-    && rm ${PREFIX}/conf/*.default \
+    && mv ${PREFIX}/conf/mime.types ${WORKDIR}/ \
+    && rm ${PREFIX}/conf/* \
+    && mv ${WORKDIR}/mime.types ${PREFIX}/conf/ \
+    && mv ${WORKDIR}/nginx.conf ${PREFIX}/conf/ \
     && mkdir ${PREFIX}/cache \
     && echo ' - remove apk install deps' \
     && apk del .build-deps \
     && echo '---------------------------'
+
 
 FROM alpine:3.11
 WORKDIR /usr/local/nginx
