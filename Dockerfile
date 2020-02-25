@@ -93,7 +93,6 @@ RUN echo ' - install pcre' \
     && rm -r /tmp/pcre-${PCRE_VER} \
     && echo '---------------------------'
 
-
 #     --with-cc-opt="-I${OPENSSL_INC} -I${PCRE_INC} -I${ZLIB_INC} " \
 #     --with-ld-opt="-L${PCRE_LIB} -L${OPENSSL_LIB} -L${ZLIB_LIB} -Wl,-rpath,${PCRE_LIB}:${OPENSSL_LIB}:${ZLIB_LIB}" \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
@@ -144,7 +143,7 @@ RUN echo    ' - install nginx' \
     && rm ${PREFIX}/conf/uw* \
     && rm ${PREFIX}/conf/*.default \
     && mkdir ${PREFIX}/cache \
-    && echo ' -  remove apk install deps' \
+    && echo ' - remove apk install deps' \
     && apk del .build-deps \
     && echo '---------------------------'
 
