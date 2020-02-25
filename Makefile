@@ -11,7 +11,7 @@ LAST_ALPINE_VER != grep -oP '^FROM alpine:\K[\d\.]+' Dockerfile | head -1
 build: bld
 	@export DOCKER_BUILDKIT=1;
 	@docker buildx build -o type=docker \
-  --tag $(DOCKER_IMAGE):min-$(NGINX_VER) \
+  --tag $(DOCKER_IMAGE):$(NGINX_VER) \
   --tag docker.pkg.github.com/$(REPO_OWNER)/$(REPO_NAME)/$(PROXY_CONTAINER_NAME):$(PROXY_VER) \
   --build-arg PREFIX='$(NGINX_HOME)' \
   --build-arg NGINX_VER='$(NGINX_VER)' \
@@ -57,7 +57,6 @@ run:
   docker.pkg.github.com/$(REPO_OWNER)/$(REPO_NAME)/$(PROXY_CONTAINER_NAME):$(PROXY_VER)
 	@sleep 3
 	@docker ps
-	@docker logs min
 
 .PHONY: stop
 stop:

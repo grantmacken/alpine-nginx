@@ -1,8 +1,9 @@
-name: alpine-openresty-ci
+name: proxy container build
 
 on:
   push:
-    branches: master
+    branches:
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,6 +31,6 @@ jobs:
         run: |
           source .env
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login --username ${REPO_OWNER} --password-stdin 
-          docker push ${DOCKER_IMAGE}:min-${OPENRESTY_VER}
+          docker push ${DOCKER_IMAGE}:${NGINX_VER}
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com --username ${REPO_OWNER} --password-stdin
           docker push docker.pkg.github.com/${REPO_OWNER}/${REPO_NAME}/${PROXY_CONTAINER_NAME}:${PROXY_VER}

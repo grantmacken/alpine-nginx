@@ -150,8 +150,7 @@ RUN echo    ' - install nginx' \
     && apk del .build-deps \
     && echo '---------------------------'
 
-FROM alpine:3.11 as min
-
+FROM alpine:3.11
 WORKDIR /usr/local/nginx
 ENV NGINX_HOME /usr/local/nginx
 ENV LANG C.UTF-8
