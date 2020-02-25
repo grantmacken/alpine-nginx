@@ -1,12 +1,10 @@
 # syntax=docker/dockerfile:experimental
-# Dockerfile grantmacken/alpine-nginx
 # https://github.com/grantmacken/alpine-nginx
 
 FROM alpine:3.11 as bld
 # LABEL maintainer="${GIT_USER_NAME} <${GIT_USER_EMAIL}>"
 # https://github.com/ricardbejarano/nginx/blob/master/Dockerfile.musl
 # https://github.com/nginx-modules/nginx-docker-container
-
 
 ARG PREFIX
 ARG MODULES="${PREFIX}/modules"
