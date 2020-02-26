@@ -147,14 +147,13 @@ RUN echo    ' - install nginx' \
     && apk del .build-deps \
     && echo '---------------------------'
 
-
 FROM alpine:3.11
 WORKDIR /usr/local/nginx
 ENV NGINX_HOME /usr/local/nginx
 ENV LANG C.UTF-8
 
 COPY --from=bld /usr/local/nginx /usr/local/nginx
-RUN apk add --update tzdata \
+RUN apk add --no-cache tzdata \
     && mkdir -p /etc/letsencrypt \
     && ln -sf /dev/stdout logs/access.log \
     && ln -sf /dev/stderr logs/error.log
