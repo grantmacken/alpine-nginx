@@ -97,7 +97,6 @@ RUN echo ' - install pcre' \
 #     --with-ld-opt="-L${PCRE_LIB} -L${OPENSSL_LIB} -L${ZLIB_LIB} -Wl,-rpath,${PCRE_LIB}:${OPENSSL_LIB}:${ZLIB_LIB}" \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
 WORKDIR = /home
-COPY ./proxy/conf/nginx.conf ${WORKDIR}/
 ADD  https://nginx.org/download/nginx-${NGINX_VER}.tar.gz ${WORKDIR}/nginx.tar.gz
 RUN echo    ' - install nginx' \
     && echo '   -----------------' \
@@ -140,7 +139,6 @@ RUN echo    ' - install nginx' \
     && mv ${PREFIX}/conf/mime.types ${WORKDIR}/ \
     && rm ${PREFIX}/conf/* \
     && mv ${WORKDIR}/mime.types ${PREFIX}/conf/ \
-    && mv ${WORKDIR}/nginx.conf ${PREFIX}/conf/ \
     && mkdir ${PREFIX}/cache \
     && mkdir -p ${PREFIX}/html/.well-known/acme-challange \
     && echo ' - remove apk install deps' \
@@ -153,6 +151,7 @@ ENV NGINX_HOME /usr/local/nginx
 ENV LANG C.UTF-8
 
 COPY --from=bld /usr/local/nginx /usr/local/nginx
+COPY ./proxy/conf/nginx.conf ${WORKDIR}/conf/nginx.conf
 RUN apk add --no-cache tzdata \
     && mkdir -p /etc/letsencrypt \
     && ln -sf /dev/stdout logs/access.log \
