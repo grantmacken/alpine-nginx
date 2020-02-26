@@ -151,11 +151,12 @@ ENV NGINX_HOME /usr/local/nginx
 ENV LANG C.UTF-8
 
 COPY --from=bld /usr/local/nginx /usr/local/nginx
-COPY ./proxy/conf/nginx.conf ${WORKDIR}/conf/nginx.conf
+COPY ./proxy/conf/nginx.conf /usr/local/nginx/conf/
 RUN apk add --no-cache tzdata \
     && mkdir -p /etc/letsencrypt \
     && ln -sf /dev/stdout logs/access.log \
-    && ln -sf /dev/stderr logs/error.log
+    && ln -sf /dev/stderr logs/error.log \
+    && ./sbin/nginx -t
 
 EXPOSE 80 443
 STOPSIGNAL SIGTERM
