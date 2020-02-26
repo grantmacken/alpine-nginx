@@ -142,6 +142,7 @@ RUN echo    ' - install nginx' \
     && mv ${WORKDIR}/mime.types ${PREFIX}/conf/ \
     && mv ${WORKDIR}/nginx.conf ${PREFIX}/conf/ \
     && mkdir ${PREFIX}/cache \
+    && mkdir -p ${PREFIX}/html/.well-known/acme-challange \
     && echo ' - remove apk install deps' \
     && apk del .build-deps \
     && echo '---------------------------'
