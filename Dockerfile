@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
        perl-dev \
        zlib-dev
 
-WORKDIR = /home
+WORKDIR /home
 ADD https://zlib.net/zlib-${ZLIB_VER}.tar.gz ${WORKDIR}/zlib.tar.gz
 RUN echo ' - install zlib' \
     && echo '   ------------' \
@@ -96,7 +96,7 @@ RUN echo ' - install pcre' \
 #     --with-cc-opt="-I${OPENSSL_INC} -I${PCRE_INC} -I${ZLIB_INC} " \
 #     --with-ld-opt="-L${PCRE_LIB} -L${OPENSSL_LIB} -L${ZLIB_LIB} -Wl,-rpath,${PCRE_LIB}:${OPENSSL_LIB}:${ZLIB_LIB}" \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
-WORKDIR = /home
+WORKDIR /home
 ADD  https://nginx.org/download/nginx-${NGINX_VER}.tar.gz ${WORKDIR}/nginx.tar.gz
 RUN echo    ' - install nginx' \
     && echo '   -----------------' \
@@ -120,6 +120,7 @@ RUN echo    ' - install nginx' \
     --without-http_autoindex_module \
     --without-http_geo_module \
     \
+    --with-http_auth_request_module \
     --with-file-aio \
     --with-http_ssl_module \
     --with-http_v2_module \
