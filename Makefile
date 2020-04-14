@@ -6,7 +6,6 @@ LUAJIT_OPT :='-msse4a'
 endif
 LAST_ALPINE_VER != grep -oP '^FROM alpine:\K[\d\.]+' Dockerfile | head -1
 
-
 .PHONY: build
 build: bld
 	@export DOCKER_BUILDKIT=1;
