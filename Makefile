@@ -1,10 +1,13 @@
 SHELL=/bin/bash
 include .env
 
-ifndef GITHUB_ACTION
-LUAJIT_OPT :='-msse4a'
-endif
 LAST_ALPINE_VER != grep -oP '^FROM alpine:\K[\d\.]+' Dockerfile | head -1
+# Release links
+# https://wiki.alpinelinux.org/wiki/Alpine_Linux:Releases
+# https://github.com/nginx/nginx/releases/
+# https://github.com/openssl/openssl/releases
+# https://www.pcre.org/  - always uses 8.3
+# https://www.zlib.net/  - 1.2.11 rare updates
 
 .PHONY: build
 build: bld
@@ -21,7 +24,6 @@ build: bld
 
 .PHONY: bld
 bld:
-	@export DOCKER_BUILDKIT=1;
 	@echo '$(DOCKER_IMAGE)'
 	@export DOCKER_BUILDKIT=1;
 	@echo 'LAST ALPINE VERSION: $(LAST_ALPINE_VER) '
