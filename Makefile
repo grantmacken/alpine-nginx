@@ -20,6 +20,11 @@ build: bld
   --build-arg ZLIB_VER='$(ZLIB_VER)' \
   --build-arg PCRE_VER='$(PCRE_VER)' \
   --build-arg OPENSSL_VER='$(OPENSSL_VER)' \
+  --build-arg ECHO_VER='$(ECHO_VER)' \
+  --build-arg HEADERS_MORE_VER='$(HEADERS_MORE_VER)' \
+  --build-arg NGX_DEVEL_KIT='$(NGX_DEVEL_KIT)' \
+  --build-arg SET_MISC_VER='$(SET_MISC_VER)' \
+  --build-arg FORM_INPUT_VER='$(FORM_INPUT_VER)' \
  .
 
 .PHONY: bld
@@ -40,7 +45,14 @@ bld:
   --build-arg ZLIB_VER='$(ZLIB_VER)' \
   --build-arg PCRE_VER='$(PCRE_VER)' \
   --build-arg OPENSSL_VER='$(OPENSSL_VER)' \
+  --build-arg ECHO_VER='$(ECHO_VER)' \
+  --build-arg HEADERS_MORE_VER='$(HEADERS_MORE_VER)' \
+  --build-arg NGX_DEVEL_KIT='$(NGX_DEVEL_KIT)' \
+  --build-arg SET_MISC_VER='$(SET_MISC_VER)' \
+  --build-arg FORM_INPUT_VER='$(FORM_INPUT_VER)' \
  .
+
+
 
 dkrStatus != docker ps --filter name=orMin --format 'status: {{.Status}}'
 dkrPortInUse != docker ps --format '{{.Ports}}' | grep -oP '^(.+):\K(\d{4})' | grep -oP "80"
@@ -58,6 +70,15 @@ run:
   docker.pkg.github.com/$(REPO_OWNER)/$(REPO_NAME)/$(PROXY_CONTAINER_NAME):$(PROXY_VER)
 	@sleep 3
 	@docker ps
+
+
+.PHONY: run-bld
+run-bld:
+	@docker run  -it --rm \
+  --name  bld \
+  $(DOCKER_IMAGE):bld-$(NGINX_VER)
+
+
 
 .PHONY: stop
 stop:

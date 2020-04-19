@@ -1,10 +1,30 @@
 # syntax=docker/dockerfile:experimental
 # https://github.com/grantmacken/alpine-nginx
+# https://github.com/agile6v/awesome-nginx
+# dynamic modules
+# installed
+# https://github.com/openresty/echo-nginx-module/releases
+# TODO
+# https://github.com/calio/form-input-nginx-module/releases
+# https://github.com/openresty/set-misc-nginx-module/releases
+# https://github.com/calio/form-input-nginx-module/releases
+# https://github.com/openresty/array-var-nginx-module
+# https://github.com/openresty/headers-more-nginx-module/releases
+# https://github.com/vision5/ngx_devel_kit/releases
+# for caching with redis
+# https://www.nginx.com/resources/wiki/modules/redis/
+# https://github.com/openresty/redis2-nginx-module/releases
+# https://github.com/openresty/srcache-nginx-module
+
+# https://github.com/openresty/replace-filter-nginx-module
+# https://github.com/openresty/stream-echo-nginx-module
+
 
 FROM alpine:3.11 as bld
 # LABEL maintainer="${GIT_USER_NAME} <${GIT_USER_EMAIL}>"
 # https://github.com/ricardbejarano/nginx/blob/master/Dockerfile.musl
 # https://github.com/nginx-modules/nginx-docker-container
+
 
 ARG PREFIX
 ARG MODULES="${PREFIX}/modules"
@@ -12,6 +32,13 @@ ARG NGINX_VER
 ARG PCRE_VER
 ARG ZLIB_VER
 ARG OPENSSL_VER
+
+ARG ECHO_VER
+ARG HEADERS_MORE_VER
+ARG NGX_DEVEL_KIT
+ARG SET_MISC_VER
+ARG FORM_INPUT_VER
+
 ARG PCRE_PREFIX="${PREFIX}/pcre"
 ARG PCRE_LIB="${PCRE_PREFIX}/lib"
 ARG PCRE_INC="${PCRE_PREFIX}/include"
@@ -93,6 +120,37 @@ RUN echo ' - install pcre' \
     && rm -r /tmp/pcre-${PCRE_VER} \
     && echo '---------------------------'
 
+# ARG ECHO_VER
+# ARG HEADERS_MORE_VER
+# ARG NGX_DEVEL_KIT
+# ARG SET_MISC_VER
+
+ADD https://github.com/openresty/echo-nginx-module/archive/${ECHO_VER}.tar.gz ${WORKDIR}/echo-nginx-module.tar.gz
+RUN echo ' - unpack echo-nginx-module ' \
+    && mkdir /home/modules \
+    && tar -C /home/modules -xf ${WORKDIR}/echo-nginx-module.tar.gz \
+    && cd modules && mv echo-nginx-module*  echo-nginx-module
+
+ADD https://github.com/vision5/ngx_devel_kit/archive/${NGX_DEVEL_KIT}.tar.gz ${WORKDIR}/ngx_devel_kit.tar.gz
+RUN echo ' - unpack ngx_devel_kit' \
+    && tar -C /home/modules -xf ${WORKDIR}/ngx_devel_kit.tar.gz \
+    && cd modules && mv ngx_devel_kit*  ngx_devel_kit
+
+ADD https://github.com/openresty/set-misc-nginx-module/archive/${SET_MISC_VER}.tar.gz ${WORKDIR}/set-misc-nginx-module.tar.gz
+RUN echo ' - unpack set-misc-nginx-module' \
+    && tar -C /home/modules -xf ${WORKDIR}/set-misc-nginx-module.tar.gz \
+    && cd modules && mv set-misc-nginx-module*  set-misc-nginx-module
+
+ADD https://github.com/openresty/headers-more-nginx-module/archive/${HEADERS_MORE_VER}.tar.gz ${WORKDIR}/headers-more-nginx-module.tar.gz
+RUN echo ' - unpack headers-more-nginx-module' \
+    && tar -C /home/modules -xf ${WORKDIR}/headers-more-nginx-module.tar.gz \
+    && cd modules && mv headers-more-nginx-module*  headers-more-nginx-module
+
+ADD https://github.com/calio/form-input-nginx-module/archive/${FORM_INPUT_VER}.tar.gz ${WORKDIR}/form-input-nginx-module.tar.gz
+RUN echo ' - unpack form-input-nginx-module' \
+    && tar -C /home/modules -xf ${WORKDIR}/form-input-nginx-module.tar.gz \
+    && cd modules && mv form-input-nginx-module* form-input-nginx-module
+
 #     --with-cc-opt="-I${OPENSSL_INC} -I${PCRE_INC} -I${ZLIB_INC} " \
 #     --with-ld-opt="-L${PCRE_LIB} -L${OPENSSL_LIB} -L${ZLIB_LIB} -Wl,-rpath,${PCRE_LIB}:${OPENSSL_LIB}:${ZLIB_LIB}" \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
@@ -134,6 +192,11 @@ RUN echo    ' - install nginx' \
     --with-http_gzip_static_module \
     --with-http_slice_module \
     --with-http_stub_status_module \
+    --add-dynamic-module=/home/modules/echo-nginx-module \
+    --add-dynamic-module=/home/modules/ngx_devel_kit \
+    --add-dynamic-module=/home/modules/set-misc-nginx-module \
+    --add-dynamic-module=/home/modules/headers-more-nginx-module \
+    --add-dynamic-module=/home/modules/form-input-nginx-module \
     && make && make install \
     && rm ${WORKDIR}/nginx.tar.gz \
     && rm -r /tmp/nginx-${NGINX_VER} \
@@ -145,6 +208,8 @@ RUN echo    ' - install nginx' \
     && echo ' - remove apk install deps' \
     && apk del .build-deps \
     && echo '---------------------------'
+
+ # --add-dynamic-module /home/modules/echo-nginx-module \
 
 FROM alpine:3.11
 WORKDIR /usr/local/nginx
