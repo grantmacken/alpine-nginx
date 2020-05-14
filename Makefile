@@ -25,6 +25,7 @@ build: bld
   --build-arg NGX_DEVEL_KIT='$(NGX_DEVEL_KIT)' \
   --build-arg SET_MISC_VER='$(SET_MISC_VER)' \
   --build-arg FORM_INPUT_VER='$(FORM_INPUT_VER)' \
+  --build-arg COOKIE_FLAG_VER='$(COOKIE_FLAG_VER)' \
  .
 
 .PHONY: bld
@@ -50,9 +51,8 @@ bld:
   --build-arg NGX_DEVEL_KIT='$(NGX_DEVEL_KIT)' \
   --build-arg SET_MISC_VER='$(SET_MISC_VER)' \
   --build-arg FORM_INPUT_VER='$(FORM_INPUT_VER)' \
+  --build-arg COOKIE_FLAG_VER='$(COOKIE_FLAG_VER)' \
  .
-
-
 
 dkrStatus != docker ps --filter name=orMin --format 'status: {{.Status}}'
 dkrPortInUse != docker ps --format '{{.Ports}}' | grep -oP '^(.+):\K(\d{4})' | grep -oP "80"
@@ -71,14 +71,11 @@ run:
 	@sleep 3
 	@docker ps
 
-
 .PHONY: run-bld
 run-bld:
 	@docker run  -it --rm \
   --name  bld \
   $(DOCKER_IMAGE):bld-$(NGINX_VER)
-
-
 
 .PHONY: stop
 stop:
