@@ -3,21 +3,26 @@
 # https://github.com/agile6v/awesome-nginx
 # dynamic modules
 # installed
-# https://github.com/openresty/echo-nginx-module/releases
-# TODO
-# https://github.com/calio/form-input-nginx-module/releases
-# https://github.com/openresty/set-misc-nginx-module/releases
-# https://github.com/calio/form-input-nginx-module/releases
-# https://github.com/openresty/array-var-nginx-module
-# https://github.com/openresty/headers-more-nginx-module/releases
+# https://github.com/openresty/echo-nginx-module
+# https://github.com/openresty/headers-more-nginx-module
+# https://github.com/openresty/set-misc-nginx-module
 # https://github.com/vision5/ngx_devel_kit/releases
+# TODO
 # for caching with redis
-# https://www.nginx.com/resources/wiki/modules/redis/
+# https://github.com/AirisX/nginx_cookie_flag_module
+# https://github.com/calio/form-input-nginx-module/releases
+# https://github.com/google/ngx_brotli
+# https://github.com/openresty/array-var-nginx-module
+# https://github.com/openresty/encrypted-session-nginx-module
 # https://github.com/openresty/redis2-nginx-module/releases
 # https://github.com/openresty/srcache-nginx-module
+# https://github.com/vision5/ngx_devel_kit/releases
+# https://www.nginx.com/resources/wiki/modules/redis/
+# https://nginx.org/en/docs/http/ngx_http_image_filter_module.html
 
 # https://github.com/openresty/replace-filter-nginx-module
 # https://github.com/openresty/stream-echo-nginx-module
+# https://github.com/GetPageSpeed/ngx_security_headers
 
 
 FROM alpine:3.11 as bld
@@ -38,6 +43,7 @@ ARG HEADERS_MORE_VER
 ARG NGX_DEVEL_KIT
 ARG SET_MISC_VER
 ARG FORM_INPUT_VER
+ARG COOKIE_FLAG_VER
 
 ARG PCRE_PREFIX="${PREFIX}/pcre"
 ARG PCRE_LIB="${PCRE_PREFIX}/lib"
@@ -151,6 +157,11 @@ RUN echo ' - unpack form-input-nginx-module' \
     && tar -C /home/modules -xf ${WORKDIR}/form-input-nginx-module.tar.gz \
     && cd modules && mv form-input-nginx-module* form-input-nginx-module
 
+ADD https://github.com/AirisX/nginx_cookie_flag_module/archive/${COOKIE_FLAG_VER}.tar.gz ${WORKDIR}/nginx_cookie_flag_module.tar.gz
+RUN echo ' - unpack nginx_cookie_flag_module' \
+    && tar -C /home/modules -xf ${WORKDIR}/nginx_cookie_flag_module.tar.gz \
+    && cd modules && mv nginx_cookie_flag_module* nginx_cookie_flag_module
+
 #     --with-cc-opt="-I${OPENSSL_INC} -I${PCRE_INC} -I${ZLIB_INC} " \
 #     --with-ld-opt="-L${PCRE_LIB} -L${OPENSSL_LIB} -L${ZLIB_LIB} -Wl,-rpath,${PCRE_LIB}:${OPENSSL_LIB}:${ZLIB_LIB}" \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
@@ -178,6 +189,7 @@ RUN echo    ' - install nginx' \
     --without-http_autoindex_module \
     --without-http_geo_module \
     \
+    --with-compat \
     --with-http_auth_request_module \
     --with-file-aio \
     --with-http_ssl_module \
@@ -187,11 +199,12 @@ RUN echo    ' - install nginx' \
     --with-stream \
     --with-stream_ssl_module \
     --with-threads \
-    \
     --with-http_gunzip_module \
     --with-http_gzip_static_module \
     --with-http_slice_module \
     --with-http_stub_status_module \
+    --with-http_realip_module \
+    \
     --add-dynamic-module=/home/modules/echo-nginx-module \
     --add-dynamic-module=/home/modules/ngx_devel_kit \
     --add-dynamic-module=/home/modules/set-misc-nginx-module \
