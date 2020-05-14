@@ -1,6 +1,10 @@
 # syntax=docker/dockerfile:experimental
 # https://github.com/grantmacken/alpine-nginx
 # https://github.com/agile6v/awesome-nginx
+# latest list
+# https://nginx.org/
+# https://www.openssl.org/
+# https://www.zlib.net/
 # dynamic modules
 # installed
 # https://github.com/openresty/echo-nginx-module
@@ -24,12 +28,10 @@
 # https://github.com/openresty/stream-echo-nginx-module
 # https://github.com/GetPageSpeed/ngx_security_headers
 
-
 FROM alpine:3.11 as bld
 # LABEL maintainer="${GIT_USER_NAME} <${GIT_USER_EMAIL}>"
 # https://github.com/ricardbejarano/nginx/blob/master/Dockerfile.musl
 # https://github.com/nginx-modules/nginx-docker-container
-
 
 ARG PREFIX
 ARG MODULES="${PREFIX}/modules"
@@ -167,7 +169,7 @@ RUN echo ' - unpack nginx_cookie_flag_module' \
 # https://github.com/openresty/openresty-packaging/blob/master/deb/openresty/debian/rules
 WORKDIR /home
 ADD  https://nginx.org/download/nginx-${NGINX_VER}.tar.gz ${WORKDIR}/nginx.tar.gz
-RUN echo    ' - install nginx' \
+RUN echo    ' - install nginx modules' \
     && echo '   -----------------' \
     &&  tar -C /tmp -xvf ${WORKDIR}/nginx.tar.gz \
     && cd /tmp/nginx-${NGINX_VER} \
@@ -210,6 +212,7 @@ RUN echo    ' - install nginx' \
     --add-dynamic-module=/home/modules/set-misc-nginx-module \
     --add-dynamic-module=/home/modules/headers-more-nginx-module \
     --add-dynamic-module=/home/modules/form-input-nginx-module \
+    --add-dynamic-module=/home/modules/nginx_cookie_flag_module \
     && make && make install \
     && rm ${WORKDIR}/nginx.tar.gz \
     && rm -r /tmp/nginx-${NGINX_VER} \
@@ -222,8 +225,6 @@ RUN echo    ' - install nginx' \
     && apk del .build-deps \
     && echo '---------------------------'
 
- # --add-dynamic-module /home/modules/echo-nginx-module \
-
 FROM alpine:3.11
 WORKDIR /usr/local/nginx
 ENV NGINX_HOME /usr/local/nginx
@@ -231,6 +232,7 @@ ENV LANG C.UTF-8
 
 COPY --from=bld /usr/local/nginx /usr/local/nginx
 COPY ./proxy/conf/nginx.conf /usr/local/nginx/conf/
+
 RUN apk add --no-cache tzdata \
     && mkdir -p /etc/letsencrypt \
     && ln -sf /dev/stdout logs/access.log \
