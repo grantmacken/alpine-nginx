@@ -11,8 +11,8 @@ LAST_ALPINE_VER != grep -oP '^FROM alpine:\K[\d\.]+' Dockerfile | head -1
 
 .PHONY: build
 build: bld
-	@export DOCKER_BUILDKIT=1;
-	@docker buildx build -o type=docker \
+	@#export DOCKER_BUILDKIT=1;
+	@docker buildx build --output "type=image,push=false" \
   --tag $(DOCKER_IMAGE):$(NGINX_VER) \
   --tag docker.pkg.github.com/$(REPO_OWNER)/$(REPO_NAME)/$(PROXY_CONTAINER_NAME):$(PROXY_VER) \
   --build-arg PREFIX='$(NGINX_HOME)' \
@@ -31,15 +31,15 @@ build: bld
 .PHONY: bld
 bld:
 	@echo '$(DOCKER_IMAGE)'
-	@export DOCKER_BUILDKIT=1;
+	@#export DOCKER_BUILDKIT=1;
 	@echo 'LAST ALPINE VERSION: $(LAST_ALPINE_VER) '
 	@if [[ '$(LAST_ALPINE_VER)' = '$(FROM_ALPINE_TAG)' ]] ; then \
  echo 'FROM_ALPINE_TAG: $(FROM_ALPINE_TAG) ' ; else \
  echo ' - updating Dockerfile to Alpine tag: $(FROM_ALPINE_TAG) ' && \
  sed -i 's/alpine:$(LAST_ALPINE_VER)/alpine:$(FROM_ALPINE_TAG)/g' Dockerfile && \
  docker pull alpine:$(FROM_ALPINE_TAG) ; fi
-	@docker buildx build -o type=docker \
-  --target=bld \
+	@docker buildx build --output "type=image,push=false" \
+  --target=$@ \
   --tag='$(DOCKER_IMAGE):$(@)-$(NGINX_VER)' \
   --build-arg PREFIX='$(NGINX_HOME)' \
   --build-arg NGINX_VER='$(NGINX_VER)' \
