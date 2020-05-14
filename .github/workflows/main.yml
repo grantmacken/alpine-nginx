@@ -18,7 +18,9 @@ jobs:
       #   with:
       #     version: latest
       - name: make images
-        run: docker version
+        run: |
+          docker version
+          docker info
       # - name: check images
       #   run: |
       #     docker images
